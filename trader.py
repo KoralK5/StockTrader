@@ -51,9 +51,9 @@ def stats(data):
 
 ma1 = 30
 ma2 = 100
-days = 365 * 3
 site = 'yahoo'
 stock = input('Stock: ')
+days = float(input('Days: '))
 
 data = scrape(stock, days, site, ma1, ma2)
 data = automate(data)
