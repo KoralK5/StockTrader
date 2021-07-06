@@ -1,13 +1,14 @@
-import datetime as dt
+from datetime import datetime as dt
 import matplotlib
+matplotlib.use('TKAgg')
+import yfinance as yf
 import matplotlib.pyplot as plt
-import pandas_datareader as pdr
+import pandas_datareader.data as pdr
 
-def scrape(stock, days, site, ma1, ma2):
-	end = dt.datetime.now()
-	start = end - dt.timedelta(days=days)
+yf.pdr_override()
 
-	data = pdr.DataReader(stock, site, start, end)
+def scrape(stock, start, end, site, ma1, ma2):
+	data = pdr.get_data_yahoo(stock, start, end)
 	data[f'SMA{ma1}'] = data['Adj Close'].rolling(window=ma1).mean()
 	data[f'SMA{ma2}'] = data['Adj Close'].rolling(window=ma2).mean()
 	data = data.iloc[ma2:]
@@ -17,7 +18,6 @@ def scrape(stock, days, site, ma1, ma2):
 def automate(data):
 	buy = []
 	sell = []
-
 	state = 0
 	for row in range(len(data)):
 		if data[f'SMA{ma1}'].iloc[row] > data[f'SMA{ma2}'].iloc[row] and state != 1:
@@ -53,8 +53,11 @@ ma1 = 30
 ma2 = 100
 site = 'yahoo'
 stock = input('Stock: ')
-days = float(input('Days: '))
+start = input('Start Date: ')
+end = input('End Date: ')
 
-data = scrape(stock, days, site, ma1, ma2)
+start, end, stock = '01-01-2010', '03-07-2021', 'AAPL'
+
+data = scrape(stock, dt.strptime(start, '%d-%m-%Y'), dt.strptime(end, '%d-%m-%Y'), site, ma1, ma2)
 data = automate(data)
 stats(data)
