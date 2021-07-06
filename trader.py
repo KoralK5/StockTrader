@@ -56,7 +56,9 @@ stock = input('Stock: ')
 start = input('Start Date: ')
 end = input('End Date: ')
 
-start, end, stock = '01-01-2018', '03-07-2021', 'TSLA'
+stock = stock if stock != '' else 'AAPL'
+start = start if start != '' else '01-01-2021'
+stock = stock if stock != '' else '01-01-2020'
 
 data = scrape(stock, dt.strptime(start, '%d-%m-%Y'), dt.strptime(end, '%d-%m-%Y'), site, ma1, ma2)
 data = automate(data)
